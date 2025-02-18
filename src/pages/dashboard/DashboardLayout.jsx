@@ -1,0 +1,40 @@
+import React from 'react' 
+import { Outlet } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { Navigate } from "react-router-dom";
+import UserDashboard from './UserDashboard'
+import AdminDashboard from './AdminDashboard';
+import ManagerDashboard from './ManagerDashboard'; 
+
+const DashboardLayout = () => {
+  const { user } = useSelector((state) => state.auth); 
+  if (!user) {
+    return <Navigate to="/login" replace />
+  }
+
+  const renderDashboard = () => {
+    switch (user?.role) {
+      case 'admin': 
+        return <AdminDashboard />;
+      case 'manager': // Nouveau rôle ajouté
+        return <ManagerDashboard />;
+      case 'user':
+        return <UserDashboard />;
+      default:
+        return <Navigate to="/login" replace />;
+    }
+  }
+
+  return (
+    <div className="container mx-auto flex flex-col md:flex-row gap-4 items-start justify-start absolute top-5 left-0 right-0 md:top-5 md:left-0 md:right-0 md:mx-auto">
+      <header className='lg:w-1/5 sm:w-2/5 w-full border'>
+        {renderDashboard()}
+      </header>
+      <main className='p-8 bg-white w-full border mt-5'>
+        <Outlet />
+      </main>
+    </div>
+  )
+}
+
+export default DashboardLayout;
